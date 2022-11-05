@@ -1,47 +1,32 @@
 const express = require('express');
+const { v4:uuidV4 } = require('uuid')
 
 const app = express();
 
 // Midware
 app.use(express.json())
 
-//localhost:8080
+/* 
+	cpf? string
+	name? string
+	id - uuid
+	statement [Array] (extrato)
+*/
+const customers = []
 
-// Tipos de parametros:
-// 	*Route Params => (:id) Identificar um recurso Buscar/Deletar/Editar
-// 	*Query Params => Paginação/Filtro de Busca/...
-// 					([?chave="valor"&chave2] ou ) 
-// }
-// * body Params => Os objetos para inserção/alteração
+app.post("/account", (request, response)=>{
+	const { cpf, name } = request.body
+	const id = uuidV4()
 
-app.get("/", (request, response)=>{
-	return response.json({message: "Hello world"})
-});
+	customers.push({
+		cpf,
+		name,
+		id,
+		statement: []
+	});
+	console.log(customers)
 
-app.get("/courses", (request, response)=>{
-	const query = request.query
-	console.log(query)
-	return response.json(["Curso 1", "Curso 2", "Curso 3"])
-})
-
-app.post("/courses", (request, response)=>{
-	const body = request.body
-	console.log(body)
-	return response.json(["Curso 1", "Curso 2", "Curso 3", "Curso 4"])
-})
-
-app.put("/courses/:id", (request, response)=>{
-	const { id } = request.params
-	console.log(id)
-	return response.json(["Curso 6", "Curso 2", "Curso 3", "Curso 4"])
-})
-
-app.patch("/courses/:id", (request, response)=>{
-	return response.json(["Curso 6", "Curso 7", "Curso 3", "Curso 4"])
-})
-
-app.delete("/courses/:id", (request, response)=>{
-	return response.json(["Curso 6", "Curso 7", "Curso 4"])
+	return response.status(201).send()
 })
 
 app.listen(8080);
