@@ -29,11 +29,22 @@ app.post("/account", (request, response)=>{
 		cpf,
 		name, 
 		id: uuidV4(),
-		statement: []
+		statement: [123]
 	});
 	console.log(customers)
 
 	return response.status(201).send()
-})
+},);
+
+app.get('/statement/:cpf',(request, response) => {
+	const {cpf} = request.params
+
+	const customer = customers.find(customer => customer.cpf === cpf);
+
+	console.log(customer)
+
+	return response.json(customer.statement)
+});
+
 
 app.listen(8080);
