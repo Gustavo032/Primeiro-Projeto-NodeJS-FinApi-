@@ -32,7 +32,7 @@ function verifyIfExistsAccountCPF(request, response, next) {
 */
 
 app.post("/account", (request, response)=>{
-	const { cpf, name } = request.body
+	const { cpf, name } = request.headers
 
 	const customerAlreadyExists = customers.some(
 		(customer) => customer.cpf === cpf
@@ -46,7 +46,7 @@ app.post("/account", (request, response)=>{
 		cpf,
 		name, 
 		id: uuidV4(),
-		statement: [123]
+		statement: []
 	});
 	console.log(customers)
 
@@ -54,7 +54,7 @@ app.post("/account", (request, response)=>{
 },);
 
 app.get('/statement', verifyIfExistsAccountCPF, (request, response) => {
-	const {cpf} = request.headers
+	const { cpf } = request.headers
 
 	const customer = customers.find(customer => customer.cpf === cpf);
 
@@ -66,6 +66,23 @@ app.get('/statement', verifyIfExistsAccountCPF, (request, response) => {
 
 	return response.json(customer.statement) 
 });
+
+app.post("/deposit", verifyIfExistsAccountCPF, (request, response)=>{
+	const { amount, description } = request.body;
+
+	const { customer } = request
+	
+	const statementOperations = {
+		description: description,
+		amount: amount,
+		created_at: new Date(),
+		type: "credit"
+	}
+
+	customer.statement.push(statementOperations);
+
+	return response.status(201).send();
+})
 
 
 app.listen(8080);
